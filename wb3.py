@@ -1,9 +1,13 @@
+# -*- coding: utf-8 -*-
 import jieba
 import os
 import shutil
 import re
 import pickle
 from hanziconv import HanziConv
+import sys
+
+
 
 non_lyric_indicators = ['作曲','作词', '制作人', '编曲', '录音', '和音','和声指导','美工','文案','鸣谢',\
 '演唱','——记', '缩混', '封面', 'pv', '歌名题字', '念白', 'by', 'ti', 'ar', 'al', 'offset', '曲编', '二胡']
@@ -11,16 +15,18 @@ special_chars = "[\s+\.\!\/_,$%^*(+\"\']+|[+——！，。？、~@#￥%……&*
 
 
 def load_stop_word():
-    with open('stop_words.txt', 'r') as fp:
-        return set(fp.read().split('\n'))
+    with open('stop_words.txt', encoding="utf-8") as fp:
+        l = fp.read()
+        stwords = l.split("\n")
+        return set(stwords)
 
 def clean_line(line):
     line = line.strip()
     for indicator in non_lyric_indicators:
         if line.startswith(indicator):
             return ''
-    line = re.sub(r'[0-9a-zA-Z]', '', line, flags=re.LOCALE)
-    line = re.sub(special_chars, '', line, flags=re.LOCALE)
+    line = re.sub(r'[0-9a-zA-Z]', '', line)
+    line = re.sub(special_chars, '', line)
     line = HanziConv.toSimplified(line)
     return line
 
@@ -32,12 +38,15 @@ def parse_label(line):
 
 def build_word_set(rootDir, stop_words, word_set):
     list_dirs = os.walk(rootDir)
+    print (list_dirs)
     for root, dirs, files in list_dirs:
         for f in files:
             words = []
             label = []
             file_path = os.path.join(root, f)
-            with open(file_path, 'r') as fp:
+            if ".DS_Store"  in file_path:
+                continue
+            with open(file_path, 'r', encoding="utf-8") as fp:
                 lines = fp.read().split('\n')
                 label = parse_label(lines[0])
                 for line in lines[2:]:
