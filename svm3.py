@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 import pickle
 from sklearn import metrics
@@ -9,7 +10,7 @@ with open('train_data.bat', 'rb') as fp:
 X = data['X']
 y = data['Y']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.23, random_state=592)
-clf = svm.LinearSVC(random_state=0, multi_class='ovr')
+clf = svm.SVC(C=100, kernel="sigmoid")
 clf.fit(X_train, y_train)
 
 predictions = clf.predict(X_test)
