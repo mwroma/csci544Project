@@ -1,3 +1,4 @@
 bags/
 temp/
-train_data.bat
+train_data.bat/
+__pycache__/
